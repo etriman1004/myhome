@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DoYoung's Home</title>
+    
+    <style>
+        /* CSS 변수를 사용한 테마 정의 */
+        :root {
+            /* 라이트 테마 (기본값) */
+            --bg-color: #f4f4f9;
+            --text-color: #333333;
+            --header-bg: #ffffff;
+            --header-title: #2c3e50;
+            --header-desc: #7f8c8d;
+            --border-color: #dddddd;
+            
+            --nav-bg: #2c3e50;
+            --nav-text: #ffffff;
+            --nav-hover: #3498db;
+            
+            --card-bg: #ffffff;
+            --card-title: #2c3e50;
+            --card-text: #555555;
+            --card-date: #95a5a6;
+            --card-shadow: rgba(0, 0, 0, 0.05);
+            
+            --btn-bg: #3498db;
+            --btn-hover: #2980b9;
+            --btn-text: #ffffff;
+            
+            --theme-btn-bg: #f0f0f0;
+            --theme-btn-active: #ffffff;
+            --theme-btn-text: #555555;
+            --theme-btn-active-text: #2c3e50;
+        }
+
+        [data-theme="dark"] {
+            /* 블랙(다크) 테마 */
+            --bg-color: #121212;
+            --text-color: #e0e0e0;
+            --header-bg: #1e1e1e;
+            --header-title: #ffffff;
+            --header-desc: #aaaaaa;
+            --border-color: #333333;
+            
+            --nav-bg: #1e1e1e;
+            --nav-text: #e0e0e0;
+            --nav-hover: #3498db;
+            
+            --card-bg: #1e1e1e;
+            --card-title: #ffffff;
+            --card-text: #b0b0b0;
+            --card-date: #777777;
+            --card-shadow: rgba(0, 0, 0, 0.3);
+            
+            --btn-bg: #3498db;
+            --btn-hover: #2980b9;
+            --btn-text: #ffffff;
+            
+            --theme-btn-bg: #2c2c2c;
+            --theme-btn-active: #444444;
+            --theme-btn-text: #888888;
+            --theme-btn-active-text: #ffffff;
+        }
+
+        /* 기본 스타일 초기화 및 트랜지션 효과 */
+        body, h1, h2, p, ul, li {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        body {
+            font-family: 'Pretendard', 'Malgun Gothic', sans-serif;
+            line-height: 1.6;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* */
+        /* 헤더 스타일 */
+        header {
+            position: relative;
+            background-color: var(--header-bg);
+            padding: 50px 20px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        header h1 {
+            font-size: 2.2rem;
+            color: var(--header-title);
+            transition: color 0.3s ease;
+        }
+
+        header p {
+            color: var(--header-desc);
+            margin-top: 10px;
+            transition: color 0.3s ease;
+        }
+
+        /* 테마 선택기 스타일 (우측 상단 고정 및 배치) */
+        .theme-switcher-container {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+        }
+
+        .theme-switcher {
+            display: inline-flex;
+            background-color: var(--theme-btn-bg);
+            padding: 4px;
+            border-radius: 30px;
+            border: 1px solid var(--border-color);
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        .theme-btn {
+            background: none;
+            border: none;
+            outline: none;
+            padding: 6px 14px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border-radius: 20px;
+            cursor: pointer;
+            color: var(--theme-btn-text);
+            transition: all 0.2s ease;
+        }
+
+        .theme-btn.active {
+            background-color: var(--theme-btn-active);
+            color: var(--theme-btn-active-text);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* */
+        /* 네비게이션 메뉴 */
+        nav {
+            background-color: var(--nav-bg);
+            color: var(--nav-text);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        nav ul {
+            display: flex;
+            justify-content: center;
+            padding: 15px 0;
+        }
+
+        nav ul li {
+            margin: 0 20px;
+        }
+
+        nav ul li a {
+            color: var(--nav-text);
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.2s ease;
+        }
+
+        nav ul li a:hover {
+            color: var(--nav-hover);
+        }
+
+        /* 메인 컨텐츠 영역 */
+        .container {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 0 20px;
+            box-sizing: border-box;
+        }
+
+        /* 게시글 스타일 */
+        .post {
+            background-color: var(--card-bg);
+            padding: 25px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px var(--card-shadow);
+            border: 1px solid var(--border-color);
+            transition: background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+        }
+
+        .post h2 {
+            font-size: 1.5rem;
+            color: var(--card-title);
+            margin-bottom: 10px;
+            transition: color 0.3s ease;
+        }
+
+        .post .date {
+            font-size: 0.9rem;
+            color: var(--card-date);
+            margin-bottom: 15px;
+            display: block;
+            transition: color 0.3s ease;
+        }
+
+        .post p {
+            margin-bottom: 15px;
+            color: var(--card-text);
+            transition: color 0.3s ease;
+        }
+
+        .read-more {
+            display: inline-block;
+            padding: 8px 15px;
+            background-color: var(--btn-bg);
+            color: var(--btn-text);
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            transition: background-color 0.2s ease;
+        }
+
+        .read-more:hover {
+            background-color: var(--btn-hover);
+        }
+
+        /* */
+        /* 푸터 스타일 */
+        footer {
+            text-align: center;
+            padding: 25px;
+            background-color: var(--nav-bg);
+            color: var(--nav-text);
+            margin-top: 40px;
+            border-top: 1px solid var(--border-color);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 헤더 영역 -->
+    <header>
+        <!-- 테마 셀렉터 구성 -->
+        <div class="theme-switcher-container">
+            <div class="theme-switcher">
+                <button type="button" class="theme-btn active" id="btn-light" onclick="setTheme('light')">라이트</button>
+                <button type="button" class="theme-btn" id="btn-dark" onclick="setTheme('dark')">블랙</button>
+            </div>
+        </div>
+        
+        <h1>DoYoung's Home</h1>
+        <p> 일상과 생각을 기록하는 공간입니다.</p>
+    </header>
+
+    <!-- 네비게이션 영역 -->
+    <nav>
+        <ul>
+            <li><a href="#">홈</a></li>
+            <li><a href="#">소개</a></li>
+            <li><a href="#">포트폴리오</a></li>
+            <li><a href="#">방명록</a></li>
+        </ul>
+    </nav>
+
+    <!-- -->
+    <!-- 메인 컨텐츠 영역 -->
+    <div class="container">
+        <article class="post">
+            <h2>웹 개발 공부를 시작하며</h2>
+            <span class="date">2026년 6월 4일</span>
+            <p>오늘부터 본격적으로 HTML과 CSS, JavaScript 공부를 시작했다. 처음에는 복잡해 보였지만 화면에 내가 입력한 코드가 바로바로 나타나는 것을 보니 무척 흥미롭다. 앞으로 꾸준히 기록을 남겨야겠다.</p>
+            <a href="#" class="read-more">자세히 보기</a>
+        </article>
+
+        <article class="post">
+            <h2>맛있는 커피와 함께하는 오후</h2>
+            <span class="date">2026년 6월 1일</span>
+            <p>비가 오는 오후, 집 근처 카페에서 따뜻한 라떼 한 잔을 마시며 책을 읽었다. 빗소리를 들으며 조용히 나만의 시간을 가지는 것은 언제나 큰 힐링이 된다.</p>
+            <a href="#" class="read-more">자세히 보기</a>
+        </article>
+    </div>
+
+    <!-- 푸터 영역 -->
+    <footer>
+        <p>&copy; 2026 DoYoung's Home. All rights reserved.</p>
+    </footer>
+
+    <!-- -->
+    <!-- 자바스크립트 테마 스위처 로직 -->
+    <script>
+        // 테마 설정 함수
+        function setTheme(themeName) {
+            // HTML body 태그에 data-theme 속성 부여
+            document.documentElement.setAttribute('data-theme', themeName);
+            
+            // 로컬 스토리지에 유저 선택 테마 영구 저장
+            localStorage.setItem('theme', themeName);
+            
+            // 버튼 활성화 상태 업데이트
+            const lightBtn = document.getElementById('btn-light');
+            const darkBtn = document.getElementById('btn-dark');
+            
+            if (themeName === 'dark') {
+                darkBtn.classList.add('active');
+                lightBtn.classList.remove('active');
+            } else {
+                lightBtn.classList.add('active');
+                darkBtn.classList.remove('active');
+            }
+        }
+
+        // 페이지 최초 로드 시 설정된 테마 불러오기
+        window.addEventListener('DOMContentLoaded', () => {
+            // 이전에 설정한 테마가 있다면 가져오고, 없다면 브라우저/OS 기본 다크모드 설정을 감지하여 적용
+            const savedTheme = localStorage.getItem('theme');
+            const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            
+            if (savedTheme) {
+                setTheme(savedTheme);
+            } else if (systemPrefersDark) {
+                setTheme('dark');
+            } else {
+                setTheme('light');
+            }
+        });
+    </script>
+</body>
+</html>

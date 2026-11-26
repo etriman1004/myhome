@@ -1,328 +1,443 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DoYoung's Home</title>
-    
-    <style>
-        /* CSS 변수를 사용한 테마 정의 */
-        :root {
-            /* 라이트 테마 (기본값) */
-            --bg-color: #f4f4f9;
-            --text-color: #333333;
-            --header-bg: #ffffff;
-            --header-title: #2c3e50;
-            --header-desc: #7f8c8d;
-            --border-color: #dddddd;
-            
-            --nav-bg: #2c3e50;
-            --nav-text: #ffffff;
-            --nav-hover: #3498db;
-            
-            --card-bg: #ffffff;
-            --card-title: #2c3e50;
-            --card-text: #555555;
-            --card-date: #95a5a6;
-            --card-shadow: rgba(0, 0, 0, 0.05);
-            
-            --btn-bg: #3498db;
-            --btn-hover: #2980b9;
-            --btn-text: #ffffff;
-            
-            --theme-btn-bg: #f0f0f0;
-            --theme-btn-active: #ffffff;
-            --theme-btn-text: #555555;
-            --theme-btn-active-text: #2c3e50;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>모던 웹 계산기</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      user-select: none;
+    }
 
-        [data-theme="dark"] {
-            /* 블랙(다크) 테마 */
-            --bg-color: #121212;
-            --text-color: #e0e0e0;
-            --header-bg: #1e1e1e;
-            --header-title: #ffffff;
-            --header-desc: #aaaaaa;
-            --border-color: #333333;
-            
-            --nav-bg: #1e1e1e;
-            --nav-text: #e0e0e0;
-            --nav-hover: #3498db;
-            
-            --card-bg: #1e1e1e;
-            --card-title: #ffffff;
-            --card-text: #b0b0b0;
-            --card-date: #777777;
-            --card-shadow: rgba(0, 0, 0, 0.3);
-            
-            --btn-bg: #3498db;
-            --btn-hover: #2980b9;
-            --btn-text: #ffffff;
-            
-            --theme-btn-bg: #2c2c2c;
-            --theme-btn-active: #444444;
-            --theme-btn-text: #888888;
-            --theme-btn-active-text: #ffffff;
-        }
+    body {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      padding: 20px;
+    }
 
-        /* 기본 스타일 초기화 및 트랜지션 효과 */
-        body, h1, h2, p, ul, li {
-            margin: 0;
-            padding: 0;
-            list-style: none;
-        }
+    .calculator-card {
+      width: 100%;
+      max-width: 360px;
+      background: #181f2c;
+      border-radius: 28px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 
+                  0 0 0 1px rgba(255, 255, 255, 0.08);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
 
-        body {
-            font-family: 'Pretendard', 'Malgun Gothic', sans-serif;
-            line-height: 1.6;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            transition: background-color 0.3s ease, color 0.3s ease;
-        }
+    .display-container {
+      padding: 32px 24px 20px 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      justify-content: flex-end;
+      min-height: 140px;
+      word-break: break-all;
+    }
 
-        /* */
-        /* 헤더 스타일 */
-        header {
-            position: relative;
-            background-color: var(--header-bg);
-            padding: 50px 20px;
-            text-align: center;
-            border-bottom: 1px solid var(--border-color);
-            transition: background-color 0.3s ease, border-color 0.3s ease;
-        }
+    .previous-operand {
+      color: #94a3b8;
+      font-size: 1rem;
+      min-height: 1.5rem;
+      margin-bottom: 6px;
+      letter-spacing: 0.5px;
+    }
 
-        header h1 {
-            font-size: 2.2rem;
-            color: var(--header-title);
-            transition: color 0.3s ease;
-        }
+    .current-operand {
+      color: #ffffff;
+      font-size: 2.5rem;
+      font-weight: 500;
+      line-height: 1.2;
+      transition: font-size 0.15s ease;
+    }
 
-        header p {
-            color: var(--header-desc);
-            margin-top: 10px;
-            transition: color 0.3s ease;
-        }
+    .keypad {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      padding: 20px;
+      background: #131924;
+      border-radius: 24px 24px 0 0;
+    }
 
-        /* 테마 선택기 스타일 (우측 상단 고정 및 배치) */
-        .theme-switcher-container {
-            position: absolute;
-            top: 15px;
-            right: 20px;
-        }
+    button {
+      height: 64px;
+      border: none;
+      outline: none;
+      border-radius: 18px;
+      font-size: 1.35rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: all 0.12s ease;
+      color: #f1f5f9;
+      background: #232d3f;
+      box-shadow: 0 3px 0 rgba(0, 0, 0, 0.2);
+    }
 
-        .theme-switcher {
-            display: inline-flex;
-            background-color: var(--theme-btn-bg);
-            padding: 4px;
-            border-radius: 30px;
-            border: 1px solid var(--border-color);
-            transition: background-color 0.3s ease, border-color 0.3s ease;
-        }
+    button:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
+    }
 
-        .theme-btn {
-            background: none;
-            border: none;
-            outline: none;
-            padding: 6px 14px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            border-radius: 20px;
-            cursor: pointer;
-            color: var(--theme-btn-text);
-            transition: all 0.2s ease;
-        }
+    /* 특수 기능 버튼 (AC, Backspace, %, ±) */
+    .btn-function {
+      background: #334155;
+      color: #38bdf8;
+    }
+    .btn-function:hover {
+      background: #475569;
+    }
 
-        .theme-btn.active {
-            background-color: var(--theme-btn-active);
-            color: var(--theme-btn-active-text);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
+    /* 숫자 버튼 */
+    .btn-number {
+      background: #1e293b;
+    }
+    .btn-number:hover {
+      background: #27354a;
+    }
 
-        /* */
-        /* 네비게이션 메뉴 */
-        nav {
-            background-color: var(--nav-bg);
-            color: var(--nav-text);
-            transition: background-color 0.3s ease, color 0.3s ease;
-        }
+    /* 연산자 버튼 */
+    .btn-operator {
+      background: #f59e0b;
+      color: #ffffff;
+    }
+    .btn-operator:hover {
+      background: #d97706;
+    }
 
-        nav ul {
-            display: flex;
-            justify-content: center;
-            padding: 15px 0;
-        }
+    /* 등호 버튼 */
+    .btn-equals {
+      background: #10b981;
+      color: #ffffff;
+    }
+    .btn-equals:hover {
+      background: #059669;
+    }
 
-        nav ul li {
-            margin: 0 20px;
-        }
+    .shortcut-guide {
+      text-align: center;
+      padding: 12px 10px;
+      color: #64748b;
+      font-size: 0.75rem;
+      background: #131924;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
 
-        nav ul li a {
-            color: var(--nav-text);
-            text-decoration: none;
-            font-weight: bold;
-            transition: color 0.2s ease;
-        }
-
-        nav ul li a:hover {
-            color: var(--nav-hover);
-        }
-
-        /* 메인 컨텐츠 영역 */
-        .container {
-            max-width: 800px;
-            margin: 30px auto;
-            padding: 0 20px;
-            box-sizing: border-box;
-        }
-
-        /* 게시글 스타일 */
-        .post {
-            background-color: var(--card-bg);
-            padding: 25px;
-            margin-bottom: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px var(--card-shadow);
-            border: 1px solid var(--border-color);
-            transition: background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
-        }
-
-        .post h2 {
-            font-size: 1.5rem;
-            color: var(--card-title);
-            margin-bottom: 10px;
-            transition: color 0.3s ease;
-        }
-
-        .post .date {
-            font-size: 0.9rem;
-            color: var(--card-date);
-            margin-bottom: 15px;
-            display: block;
-            transition: color 0.3s ease;
-        }
-
-        .post p {
-            margin-bottom: 15px;
-            color: var(--card-text);
-            transition: color 0.3s ease;
-        }
-
-        .read-more {
-            display: inline-block;
-            padding: 8px 15px;
-            background-color: var(--btn-bg);
-            color: var(--btn-text);
-            text-decoration: none;
-            border-radius: 4px;
-            font-size: 0.9rem;
-            font-weight: bold;
-            transition: background-color 0.2s ease;
-        }
-
-        .read-more:hover {
-            background-color: var(--btn-hover);
-        }
-
-        /* */
-        /* 푸터 스타일 */
-        footer {
-            text-align: center;
-            padding: 25px;
-            background-color: var(--nav-bg);
-            color: var(--nav-text);
-            margin-top: 40px;
-            border-top: 1px solid var(--border-color);
-            transition: background-color 0.3s ease, color 0.3s ease;
-        }
-    </style>
+    @media (max-width: 400px) {
+      .calculator-card {
+        max-width: 100%;
+        border-radius: 20px;
+      }
+      button {
+        height: 56px;
+        font-size: 1.2rem;
+        border-radius: 14px;
+      }
+      .current-operand {
+        font-size: 2.1rem;
+      }
+    }
+  </style>
 </head>
 <body>
 
-    <!-- 헤더 영역 -->
-    <header>
-        <!-- 테마 셀렉터 구성 -->
-        <div class="theme-switcher-container">
-            <div class="theme-switcher">
-                <button type="button" class="theme-btn active" id="btn-light" onclick="setTheme('light')">라이트</button>
-                <button type="button" class="theme-btn" id="btn-dark" onclick="setTheme('dark')">블랙</button>
-            </div>
-        </div>
-        
-        <h1>DoYoung's Home</h1>
-        <p> 일상과 생각을 기록하는 공간입니다.</p>
-    </header>
-
-    <!-- 네비게이션 영역 -->
-    <nav>
-        <ul>
-            <li><a href="#">홈</a></li>
-            <li><a href="#">소개</a></li>
-            <li><a href="#">포트폴리오</a></li>
-            <li><a href="#">방명록</a></li>
-        </ul>
-    </nav>
-
-    <!-- -->
-    <!-- 메인 컨텐츠 영역 -->
-    <div class="container">
-        <article class="post">
-            <h2>웹 개발 공부를 시작하며</h2>
-            <span class="date">2026년 6월 4일</span>
-            <p>오늘부터 본격적으로 HTML과 CSS, JavaScript 공부를 시작했다. 처음에는 복잡해 보였지만 화면에 내가 입력한 코드가 바로바로 나타나는 것을 보니 무척 흥미롭다. 앞으로 꾸준히 기록을 남겨야겠다.</p>
-            <a href="#" class="read-more">자세히 보기</a>
-        </article>
-
-        <article class="post">
-            <h2>맛있는 커피와 함께하는 오후</h2>
-            <span class="date">2026년 6월 1일</span>
-            <p>비가 오는 오후, 집 근처 카페에서 따뜻한 라떼 한 잔을 마시며 책을 읽었다. 빗소리를 들으며 조용히 나만의 시간을 가지는 것은 언제나 큰 힐링이 된다.</p>
-            <a href="#" class="read-more">자세히 보기</a>
-        </article>
+  <div class="calculator-card">
+    <div class="display-container">
+      <div class="previous-operand" id="previous-operand"></div>
+      <div class="current-operand" id="current-operand">0</div>
     </div>
 
-    <!-- 푸터 영역 -->
-    <footer>
-        <p>&copy; 2026 DoYoung's Home. All rights reserved.</p>
-    </footer>
+    <div class="keypad">
+      <!-- 1번째 행 -->
+      <button class="btn-function" data-action="all-clear">AC</button>
+      <button class="btn-function" data-action="delete">⌫</button>
+      <button class="btn-function" data-action="percent">%</button>
+      <button class="btn-operator" data-operator="÷">÷</button>
 
-    <!-- -->
-    <!-- 자바스크립트 테마 스위처 로직 -->
-    <script>
-        // 테마 설정 함수
-        function setTheme(themeName) {
-            // HTML body 태그에 data-theme 속성 부여
-            document.documentElement.setAttribute('data-theme', themeName);
-            
-            // 로컬 스토리지에 유저 선택 테마 영구 저장
-            localStorage.setItem('theme', themeName);
-            
-            // 버튼 활성화 상태 업데이트
-            const lightBtn = document.getElementById('btn-light');
-            const darkBtn = document.getElementById('btn-dark');
-            
-            if (themeName === 'dark') {
-                darkBtn.classList.add('active');
-                lightBtn.classList.remove('active');
-            } else {
-                lightBtn.classList.add('active');
-                darkBtn.classList.remove('active');
-            }
+      <!-- 2번째 행 -->
+      <button class="btn-number" data-number="7">7</button>
+      <button class="btn-number" data-number="8">8</button>
+      <button class="btn-number" data-number="9">9</button>
+      <button class="btn-operator" data-operator="×">×</button>
+
+      <!-- 3번째 행 -->
+      <button class="btn-number" data-number="4">4</button>
+      <button class="btn-number" data-number="5">5</button>
+      <button class="btn-number" data-number="6">6</button>
+      <button class="btn-operator" data-operator="-">-</button>
+
+      <!-- 4번째 행 -->
+      <button class="btn-number" data-number="1">1</button>
+      <button class="btn-number" data-number="2">2</button>
+      <button class="btn-number" data-number="3">3</button>
+      <button class="btn-operator" data-operator="+">+</button>
+
+      <!-- 5번째 행 -->
+      <button class="btn-number" data-action="toggle-sign">±</button>
+      <button class="btn-number" data-number="0">0</button>
+      <button class="btn-number" data-number=".">.</button>
+      <button class="btn-equals" data-action="calculate">=</button>
+    </div>
+
+    <div class="shortcut-guide">
+      키보드 지원: 숫자 0~9, +, -, *, /, Enter(=), Backspace, Esc(AC)
+    </div>
+  </div>
+
+  <script>
+    class Calculator {
+      constructor(previousOperandElem, currentOperandElem) {
+        this.previousOperandElem = previousOperandElem;
+        this.currentOperandElem = currentOperandElem;
+        this.clear();
+      }
+
+      clear() {
+        this.currentOperand = '0';
+        this.previousOperand = '';
+        this.operation = undefined;
+        this.shouldResetScreen = false;
+        this.isError = false;
+      }
+
+      delete() {
+        if (this.isError) {
+          this.clear();
+          return;
+        }
+        if (this.shouldResetScreen) {
+          return;
+        }
+        if (this.currentOperand.length === 1 || (this.currentOperand.length === 2 && this.currentOperand.startsWith('-'))) {
+          this.currentOperand = '0';
+        } else {
+          this.currentOperand = this.currentOperand.slice(0, -1);
+        }
+      }
+
+      appendNumber(number) {
+        if (this.isError) {
+          this.clear();
         }
 
-        // 페이지 최초 로드 시 설정된 테마 불러오기
-        window.addEventListener('DOMContentLoaded', () => {
-            // 이전에 설정한 테마가 있다면 가져오고, 없다면 브라우저/OS 기본 다크모드 설정을 감지하여 적용
-            const savedTheme = localStorage.getItem('theme');
-            const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            
-            if (savedTheme) {
-                setTheme(savedTheme);
-            } else if (systemPrefersDark) {
-                setTheme('dark');
-            } else {
-                setTheme('light');
+        if (this.shouldResetScreen) {
+          this.currentOperand = '';
+          this.shouldResetScreen = false;
+        }
+
+        if (number === '.' && this.currentOperand.includes('.')) return;
+        if (number === '.' && (this.currentOperand === '' || this.currentOperand === '0')) {
+          this.currentOperand = '0.';
+          return;
+        }
+        if (this.currentOperand === '0' && number !== '.') {
+          this.currentOperand = number.toString();
+        } else {
+          this.currentOperand = this.currentOperand.toString() + number.toString();
+        }
+      }
+
+      toggleSign() {
+        if (this.isError || this.currentOperand === '0' || this.currentOperand === '') return;
+        if (this.currentOperand.startsWith('-')) {
+          this.currentOperand = this.currentOperand.substring(1);
+        } else {
+          this.currentOperand = '-' + this.currentOperand;
+        }
+      }
+
+      applyPercent() {
+        if (this.isError || this.currentOperand === '' || this.currentOperand === '0') return;
+        const current = parseFloat(this.currentOperand);
+        if (isNaN(current)) return;
+        const result = current / 100;
+        this.currentOperand = this.formatNumber(result);
+      }
+
+      chooseOperation(operation) {
+        if (this.isError) this.clear();
+
+        if (this.currentOperand === '') {
+          if (this.previousOperand !== '') {
+            this.operation = operation;
+          }
+          return;
+        }
+
+        if (this.previousOperand !== '') {
+          this.compute();
+        }
+
+        if (this.isError) return;
+
+        this.operation = operation;
+        this.previousOperand = this.currentOperand;
+        this.shouldResetScreen = true;
+      }
+
+      compute() {
+        let computation;
+        const prev = parseFloat(this.previousOperand);
+        const current = parseFloat(this.currentOperand);
+
+        if (isNaN(prev) || isNaN(current)) return;
+
+        switch (this.operation) {
+          case '+':
+            computation = prev + current;
+            break;
+          case '-':
+            computation = prev - current;
+            break;
+          case '×':
+          case '*':
+            computation = prev * current;
+            break;
+          case '÷':
+          case '/':
+            if (current === 0) {
+              this.currentOperand = '0으로 나눌 수 없음';
+              this.previousOperand = '';
+              this.operation = undefined;
+              this.isError = true;
+              return;
             }
-        });
-    </script>
+            computation = prev / current;
+            break;
+          default:
+            return;
+        }
+
+        // 부동소수점 오차 완화 (최대 12자리 반올림)
+        computation = Math.round((computation + Number.EPSILON) * 1e12) / 1e12;
+
+        this.currentOperand = this.formatNumber(computation);
+        this.operation = undefined;
+        this.previousOperand = '';
+        this.shouldResetScreen = true;
+      }
+
+      formatNumber(number) {
+        if (typeof number === 'string') {
+          if (isNaN(Number(number))) return number;
+          number = Number(number);
+        }
+        return number.toLocaleString('ko-KR', { maximumFractionDigits: 10 });
+      }
+
+      updateDisplay() {
+        if (this.isError) {
+          this.currentOperandElem.innerText = this.currentOperand;
+          this.previousOperandElem.innerText = '';
+          this.adjustFontSize();
+          return;
+        }
+
+        if (this.currentOperand.includes('.')) {
+          const parts = this.currentOperand.split('.');
+          const integerPart = parseFloat(parts[0]);
+          const formattedInt = isNaN(integerPart) ? '0' : integerPart.toLocaleString('ko-KR');
+          this.currentOperandElem.innerText = `${parts[0].startsWith('-') && integerPart === 0 ? '-' : ''}${formattedInt}.${parts[1]}`;
+        } else {
+          const parsed = parseFloat(this.currentOperand);
+          this.currentOperandElem.innerText = isNaN(parsed) ? this.currentOperand : parsed.toLocaleString('ko-KR');
+        }
+
+        if (this.operation != null) {
+          const prevParsed = parseFloat(this.previousOperand);
+          const formattedPrev = isNaN(prevParsed) ? this.previousOperand : prevParsed.toLocaleString('ko-KR');
+          this.previousOperandElem.innerText = `${formattedPrev} ${this.operation}`;
+        } else {
+          this.previousOperandElem.innerText = '';
+        }
+
+        this.adjustFontSize();
+      }
+
+      adjustFontSize() {
+        const len = this.currentOperandElem.innerText.length;
+        if (len > 12) {
+          this.currentOperandElem.style.fontSize = '1.5rem';
+        } else if (len > 8) {
+          this.currentOperandElem.style.fontSize = '2rem';
+        } else {
+          this.currentOperandElem.style.fontSize = '2.5rem';
+        }
+      }
+    }
+
+    const previousOperandElem = document.getElementById('previous-operand');
+    const currentOperandElem = document.getElementById('current-operand');
+    const calculator = new Calculator(previousOperandElem, currentOperandElem);
+
+    // 마우스 클릭 이벤트 위임
+    document.querySelector('.keypad').addEventListener('click', (e) => {
+      const target = e.target.closest('button');
+      if (!target) return;
+
+      if (target.dataset.number) {
+        calculator.appendNumber(target.dataset.number);
+      } else if (target.dataset.operator) {
+        calculator.chooseOperation(target.dataset.operator);
+      } else if (target.dataset.action === 'all-clear') {
+        calculator.clear();
+      } else if (target.dataset.action === 'delete') {
+        calculator.delete();
+      } else if (target.dataset.action === 'calculate') {
+        calculator.compute();
+      } else if (target.dataset.action === 'toggle-sign') {
+        calculator.toggleSign();
+      } else if (target.dataset.action === 'percent') {
+        calculator.applyPercent();
+      }
+
+      calculator.updateDisplay();
+    });
+
+    // 키보드 지원
+    window.addEventListener('keydown', (e) => {
+      let handled = true;
+
+      if ((e.key >= '0' && e.key <= '9') || e.key === '.') {
+        calculator.appendNumber(e.key);
+      } else if (e.key === '+') {
+        calculator.chooseOperation('+');
+      } else if (e.key === '-') {
+        calculator.chooseOperation('-');
+      } else if (e.key === '*') {
+        calculator.chooseOperation('×');
+      } else if (e.key === '/') {
+        e.preventDefault();
+        calculator.chooseOperation('÷');
+      } else if (e.key === 'Enter' || e.key === '=') {
+        e.preventDefault();
+        calculator.compute();
+      } else if (e.key === 'Backspace') {
+        calculator.delete();
+      } else if (e.key === 'Escape') {
+        calculator.clear();
+      } else if (e.key === '%') {
+        calculator.applyPercent();
+      } else {
+        handled = false;
+      }
+
+      if (handled) {
+        calculator.updateDisplay();
+      }
+    });
+  </script>
 </body>
 </html>
